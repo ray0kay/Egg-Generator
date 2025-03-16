@@ -1,0 +1,46 @@
+button {
+	color: #ffffff;
+	background-color: #2d63c8;
+	font-size: 19px;
+	border: 1px solid #2d63c8;
+	padding: 0.9em 1.6em;
+	cursor: pointer
+}
+
+html {
+	font-family: "Trebuchet MS", sans-serif;
+}
+
+input {
+	cursor: pointer;
+}
+
+input:disabled:hover {
+	cursor: not-allowed;
+}
+
+button:hover {
+	color: #2d63c8;
+	background-color: #ffffff;
+}
+
+#count {
+	font-family: Arial;
+	padding: 0;
+	margin: 0;
+	line-height: 1;
+}
+
+a {
+	color: goldenrod;
+	text-decoration: none;
+}
+
+a:hover {
+	color : limegreen;
+	text-decoration: wavy underline;
+}
+
+a:active {
+	color: lightblue;
+}
