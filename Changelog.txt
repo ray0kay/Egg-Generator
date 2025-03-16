@@ -19,11 +19,6 @@ v1.4.3:
 Further enforced compressed archive
 protection
 ===========================================
-If you have any suggestions, please
-email me at raydenz2012@gmail.com!
-===========================================
-Thanks, Rayden
-===========================================
 
 
 
