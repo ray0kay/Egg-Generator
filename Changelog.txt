@@ -3,12 +3,10 @@ Egg Generator:
 v1.4.3
 ===========================================
 v1.4:
-Added achievements (which was a LOT 
-of work)
+Added achievements
 Removed legacy folder to reduce folder
 size
-Added favicon (that tiny icon next to
-the title)
+Added favicon
 ===========================================
 v1.4.1:
 Added music
