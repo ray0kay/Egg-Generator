@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Egg Generator</title>
+    <link rel="stylesheet" href="css/doc.css">
+    <link rel="stylesheet" href="css/alerts.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="icon" type="image/x-icon" href="eggs/favicon.png"> <!--favicon-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!--
+             ^
+             |
+    animate.css
+    -->
+    <style>
+        #whiteOverlay {
+            position: fixed;
+            /* Covers the whole screen */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(255, 255, 255);
+            display: none;
+            /* Hidden by default */
+            z-index: 600;
+            /* Make sure it's on top */
+        }
+    </style>
+</head>
+
+<body>
+    <noscript>
+        <style>
+            button {
+                display: none;
+            }
+        </style>
+        JavaScript is not enabled. Please enable JavaScript in your browser settings to play Egg-Gen.
+    </noscript>
+    <div id="darkOverlay"></div>
+    <div id="whiteOverlay"></div>
+    <button id="settings" onclick="toggleSettings()">Settings</button>
+    <button id="code" onclick="inputCode()">Enter Promo Code</button>
+    <button id="wipe" onclick="wipeData()">Wipe Data</button>
+    <p id="count"></p>
+    <div id="settingsMenu" class="hidden">
+        <h2>Settings</h2>
+        <label for="darkMode">Dark mode</label>
+        <input type="checkbox" id="darkMode"><br>
+        <label for="showAchieves">Show achievement popups</label>
+        <input type="checkbox" id="showAchieves" checked><br>
+        <label for="showOverlay">Darken background</label>
+        <input type="checkbox" id="showOverlay" checked>
+        <div class="tooltipContainer">
+            <span class="tooltipSymbol">?</span>
+            <span class="tooltipText">
+                Darken the background<br>
+                when Settings is open.<br>
+            </span>
+        </div><br>
+        <label for="idiot">I'm an idiot</label>
+        <input type="checkbox" id="idiot" checked>
+        <div class="tooltipContainer">
+            <span class="tooltipSymbol">?</span>
+            <span class="tooltipText">
+                If this is checked,<br>
+                it means you are an<br>
+                idiot. Uncheck it to<br>
+                prove you are not an<br>
+                idiot.
+            </span>
+        </div><br>
+        <button id="closeSettings" onclick="closeSettings()">Close Settings</button>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        "use strict";
+        //bright-100-volume-73
+        const compressFormats = [".zip", ".tar", ".rar", ".bz2",
+            ".gz", ".lha", ".tgz", ".arj", ".arc", ".sit", "cab",
+            ".xz", ".hqx", ".7z"
+        ]
+        for (let i = 0; i < compressFormats.length; i++) {
+            if (location.href.includes(compressFormats[i])) {
+                Swal.fire({
+                    html: `<p style="font-family: Trebuchet MS, sans-serif;">
+                You are opening this file in a compressed archive.<br>
+                As of v1.4 Hotfix 2, you can no longer play Egg-Gen if<br>
+                it is in a compressed archive. If you think this is a <br>
+                mistake, email
+                <a href="mailto:raydenz2012@gmail.com">me.</a>
+                </p>`,
+                    icon: "warning",
+                    allowOutsideClick: false,
+                    confirmButtonColor: '#eb2626',
+                    confirmButtonText: "Close Egg-Gen",
+                    didOpen: () => {
+                        inPopup = true;
+                        $('#whiteOverlay').css('display', 'block')
+                    }
+                }).then(() => {
+                    window.open('', '_self', ''); window.close();
+                })
+            }
+        }
+        //set positions - start
+        const totalScreenArea = window.innerWidth * window.innerHeight;
+        const promoButtonLeft = 0.7421875 * window.innerWidth;
+        const promoButtonTop = 0.8166969147005445 * window.innerHeight;
+        const wipeButtonLeft = 0.7421875 * window.innerWidth;
+        const wipeButtonTop = 0.6715063520871143 * window.innerHeight;
+        const settingsButtonTop = 0.5263157894736842 * window.innerHeight;
+        const settingsButtonLeft = 0.7421875 * window.innerWidth;
+        const eggCounterLeft = 0.68359375 * window.innerWidth;
+        const eggCounterSize = 0.00009216197822141561 * totalScreenArea;
+        const eggLeft = 0.5078125 * window.innerWidth;
+        const eggTop = 0.8166969147 * window.innerHeight;
+        const specialEggTop = 0.49909255898 * window.innerHeight;
+        const extraSpecialEggTop = 0.7259528130671506 * window.innerHeight
+        //set positions - end
+        //promo codes - start
+        let code = ""
+        let code3Applied = false
+        let code4Applied = false
+        const code1 = "KITTY"
+        const code2 = "KINGDOM"
+        const code3 = "LEMON"
+        const code4 = "RECOMMENDATION"
+        const code5 = "CORRESPONDENCE"
+        const code6 = "CHICKEN2024EGGS"
+        const code7 = "HOW-CUTE"
+        const code8 = "PIGMENTATION"
+        /*
+        code1 is 50 eggs
+        code2 is -30 eggs (loss code)
+        code3 is a diamond egg
+        code4 is 5 diamond eggs
+        code5 sets  the egg count to -100 (loss code)
+        code6 tells you how to get infinite eggs(set eggcount then makeegg function)
+        */
+        //promo codes - end
+        //testing purposes - START
+        //achievements - ENTIRE TESTING
+        let timerInterval;
+        let justLuckyHelper = 0;
+        let achieves = {
+            "firstEgg": { condition: "eggCount === 1", title: "First Egg", desc: "Make one egg", has: false },
+            "goldenBoy": { condition: "goldEggs === 1", title: "Golden Boy", desc: "Get a golden egg", has: false },
+            "girlbf": { condition: "diamondEggs === 1", title: "A Girl's Best Friend", desc: "Get a diamond egg", has: false },
+            "woof": { condition: "specialEggs === 1", title: "Woof!", desc: "Get a special egg", has: false },
+            "justLucky": { condition: "justLuckyHelper === 1", title: "Just Lucky", desc: "You have a one in a million chance every second to earn this achievement.", has: false },
+            "howLongBeen": { condition: "eggCount === 10000", title: "How Long Have You Been Here?", desc: "Go touch some grass bro", has: false },
+            "hundredOmelets": { condition: "eggCount === 100", title: "A Hundred Omelets", desc: "Get a hundred eggs", has: false }
+        }
+        //testing purposes - END
+        $("#code").css({
+            position: "absolute",
+            left: promoButtonLeft,
+            top: promoButtonTop
+        });
+        $("#wipe").css({
+            position: "absolute",
+            left: wipeButtonLeft,
+            top: wipeButtonTop
+        });
+        $('#settings').css({
+            position: 'absolute',
+            left: settingsButtonLeft,
+            top: settingsButtonTop
+        })
+        let opt3b = 0
+        let opt3a = 0
+        let eggCount = 0
+        updateEggCount()
+        const sound0 = new Audio('sound/sound0.mp3')
+        const sound1 = new Audio('sound/sound1.mp3')
+        const sound2 = new Audio('sound/sound2.mp3')
+        let wipingData = false
+        let eggHtml = ""
+        let egg = ""
+        let opt1 = 0
+        let opt2 = 0
+        let opt3 = 0
+        let opt4 = 0
+        let opt5 = 0;
+        let whichSound = 0
+        let secretCodeApplied = false
+        let brownEggs = 0
+        let whiteEggs = 0
+        let goldEggs = 0
+        let diamondEggs = 0
+        let specialEggs = 0
+        let saphEggs = 0;
+        let hasData = localStorage.getItem("hasData")
+        let shiftDown;
+        let isUsingCode;
+        let achieveHelper;
+        let cooldown;
+        let devToolsOn;
+        let settingsOpen;
+        let darkModeOn;
+        let inPopup;
+        let showAchievePopups = true;
+        let currentSong = 0;
+        let showedMaxPopup = false;
+        let showedIdiotPopup;
+        let codesUsed = {};
+        if (typeof hasData === "string" && hasData === "true") {
+            hasData = Boolean(hasData);
+        } else if (typeof hasData === "string" && hasData === "false") {
+            hasData = Boolean(hasData);
+        }
+        //get localStorage - START
+        if (hasData) {
+            brownEggs = parseInt(localStorage.getItem("brownEggs"));
+            whiteEggs = parseInt(localStorage.getItem("whiteEggs"));
+            goldEggs = parseInt(localStorage.getItem("goldEggs"));
+            diamondEggs = parseInt(localStorage.getItem("diamondEggs"));
+            specialEggs = parseInt(localStorage.getItem("specialEggs"));
+            saphEggs = parseInt(localStorage.getItem("saphEggs"));
+            eggCount = parseInt(localStorage.getItem("eggCount"));
+            achieves = JSON.parse(localStorage.getItem("achieves"));
+            codesUsed = JSON.parse(localStorage.getItem('codesUsed'))
+            updateEggCount();
+        }
+        //get localStorage - END
+        $("#count").css({
+            position: "absolute",
+            left: eggCounterLeft,
+            top: 55,
+            'font-size': eggCounterSize
+        })
+        $("#count").text("Press E to start!")
+        function updateEggCount() {
+            $("#count").css({
+                position: "absolute",
+                left: eggCounterLeft,
+                top: 55,
+                "font-size": eggCounterSize
+            })
+            if (!(eggCount === 1)) {
+                $("#count").text(`${eggCount} eggs so far!`)
+            } else if (eggCount === 1) {
+                $("#count").text(`${eggCount} egg so far!`)
+            }
+        }
+        //quick console commands - START
+        let returnMessage = ""
+        function setEggCount(customEggCount) {
+            if (!(typeof customEggCount === "number")) {
+                returnMessage = "TypeError: Parameter is not a number"
+                throw returnMessage;
+            }
+            eggCount = customEggCount--
+            makeEgg();
+        }
+        function removeEgg() {
+            $("#egg").remove()
+            eggCount--
+            updateEggCount();
+        };
+        function wipeData() {
+            Swal.fire({
+                title: "Are you sure about this?",
+                icon: "question",
+                html: `<p class="popupFont">The page will be refreshed and you can't recover your data!</p>`,
+                showDenyButton: true,
+                confirmButtonText: "Yes",
+                denyButtonText: "No"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    wipingData = true;
+                    localStorage.clear();
+                    location.reload();
+                }
+            })
+        }
+
+        //dev mode
+        function devTools() {
+            Swal.fire({
+                showCancelButton: true,
+                title: "Enter Password:",
+                input: "password",
+                html: `<label for="showPassword">Show Password</label>
+            <input type="checkbox" id="showPassword">
+            `,
+                confirmButtonText: "Confirm",
+                didOpen: () => {
+                    const passwordInput = $(".swal2-input")[0];
+                    const showPasswordCheckbox = $("#showPassword")[0];
+                    $('showPasswordCheckbox').on("change", () => {
+                        if (showPasswordCheckbox.checked) {
+                            passwordInput.type = "text";
+                        } else {
+                            passwordInput.type = "password";
+                        }
+                    })
+                }
+            }).then((result) => {
+                if (!result.isDismissed) {
+                    if ($(".swal2-input")[0].value.toUpperCase() === "MANGOES AND COCONUTS") {
+                        console.log("Dev Tools activated.");
+                        devToolsOn = true;
+                    } else {
+                        console.error("Wrong password.");
+                    }
+                }
+            })
+        }
+
+        /**
+         * @param {string} type
+         * @param {number} amount
+         * @param {boolean} increment
+        */
+
+        function createEgg(type, amount, increment) {
+            for (let i = 0; i < amount; i++) {
+                increment ? eggCount++ : void 0; //Not do anything if its false
+                if (type === "brown") {
+                    eggHtml = '<img src=eggs/egg0.png id="egg">'
+                    egg = $(eggHtml)
+                    egg.css({
+                        position: "absolute",
+                        left: Math.floor(Math.random() * eggLeft),
+                        top: Math.floor(Math.random() * eggTop)
+                    })
+                    $("body").append(egg)
+                    increment ? brownEggs++ : void 0;
+                } else if (type === "white") {
+                    eggHtml = '<img src=eggs/egg1.png id="egg">'
+                    egg = $(eggHtml)
+                    egg.css({
+                        position: "absolute",
+                        left: Math.floor(Math.random() * eggLeft),
+                        top: Math.floor(Math.random() * eggTop)
+                    })
+                    $("body").append(egg)
+                    increment ? whiteEggs++ : void 0;
+                } else if (type === "gold") {
+                    eggHtml = '<img src=eggs/egg2.png id="egg">'
+                    egg = $(eggHtml)
+                    egg.css({
+                        position: "absolute",
+                        left: Math.floor(Math.random() * eggLeft),
+                        top: Math.floor(Math.random() * specialEggTop)
+                    })
+                    $("body").append(egg)
+                    increment ? goldEggs++ : void 0;
+                } else if (type === "diamond") {
+                    eggHtml = '<img src=eggs/egg3.png id="egg">'
+                    egg = $(eggHtml)
+                    egg.css({
+                        position: "absolute",
+                        left: Math.floor(Math.random() * eggLeft),
+                        top: Math.floor(Math.random() * specialEggTop)
+                    })
+                    $("body").append(egg)
+                    increment ? diamondEggs++ : void 0;
+                } else if (type === "special") {
+                    eggHtml = '<img src=eggs/egg4.png id="egg">'
+                    egg = $(eggHtml)
+                    egg.css({
+                        position: "absolute",
+                        left: Math.floor(Math.random() * eggTop),
+                        top: Math.floor(Math.random() * extraSpecialEggTop)
+                    })
+                    $("body").append(egg)
+                    increment ? specialEggs++ : void 0;
+                } else if (type === "saph") {
+                    eggHtml = '<img src=eggs/egg5.png id="egg">'
+                    egg = $(eggHtml)
+                    egg.css({
+                        position: "absolute",
+                        left: Math.floor(Math.random() * eggTop),
+                        top: Math.floor(Math.random() * extraSpecialEggTop)
+                    })
+                    $("body").append(egg)
+                    increment ? saphEggs++ : void 0;
+                }
+            }
+        }
+        //quick console commands - END
+        if (hasData) {
+            updateEggCount();
+            createEgg("brown", brownEggs, false);
+            createEgg("white", whiteEggs, false);
+            createEgg("gold", goldEggs, false);
+            createEgg("diamond", diamondEggs, false);
+            createEgg("special", specialEggs, false)
+            createEgg("saph", saphEggs, false);
+        }
+        function makeEgg(event) {
+            opt1 = Math.floor(Math.random() * 2)
+            opt2 = Math.floor(Math.random() * 100)
+            opt3 = Math.floor(Math.random() * 1000)
+            opt4 = Math.floor(Math.random() * 5000)
+            opt5 = Math.floor(Math.random() * 8000)
+            whichSound = Math.floor(Math.random() * 3)
+            if (secretCodeApplied) {
+                opt4 = 1
+            }
+            if (code3Applied || code4Applied) {
+                opt3 = 1
+            }
+            if (opt5 === 1) {
+                eggHtml = '<img src=eggs/egg5.png id="egg">';
+                saphEggs++;
+            }
+            if (opt4 === 1) {
+                eggHtml = '<img src=eggs/egg4.png id="egg">'
+                specialEggs++
+            } else if (opt3 === 1) {
+                eggHtml = '<img src=eggs/egg3.png id="egg">'
+                diamondEggs++
+            } else if (opt2 === 1) {
+                eggHtml = '<img src=eggs/egg2.png id="egg">'
+                goldEggs++
+            } else if (opt1 === 1) {
+                eggHtml = '<img src=eggs/egg1.png id="egg">'
+                whiteEggs++
+            } else if (opt1 === 0) {
+                eggHtml = '<img src=eggs/egg0.png id="egg">'
+                brownEggs++
+            }
+            egg = $(eggHtml)
+            if (eggCount >= 0) {
+                if (opt4 === 1 || opt5 === 1) {
+                    egg.css({
+                        position: "absolute",
+                        left: Math.floor(Math.random() * eggLeft),
+                        top: Math.floor(Math.random() * extraSpecialEggTop)
+                    })
+                }
+                if (!(opt3 === 1 || opt2 === 1)) {
+                    egg.css({
+                        position: "absolute",
+                        left: Math.floor(Math.random() * eggLeft),
+                        top: Math.floor(Math.random() * eggTop)
+                    })
+                } else if (opt3 === 1 || opt2 === 1) {
+                    egg.css({
+                        position: "absolute",
+                        left: Math.floor(Math.random() * eggLeft),
+                        top: Math.floor(Math.random() * specialEggTop)
+                    })
+                }
+                $("body").append(egg)
+            }
+            eggCount++
+            if (eggCount === 1) {
+                if (!(opt4 === 1)) {
+                    egg.css({
+                        position: "absolute",
+                        left: Math.floor(Math.random() * eggTop),
+                        top: Math.floor(Math.random() * extraSpecialEggTop)
+                    })
+                }
+                if (!(opt3 === 1 || opt2 === 1)) {
+                    egg.css({
+                        position: "absolute",
+                        left: Math.floor(Math.random() * eggLeft),
+                        top: Math.floor(Math.random() * eggTop)
+                    })
+                } else if (opt3 === 1 || opt2 === 1) {
+                    egg.css({
+                        position: "absolute",
+                        left: Math.floor(Math.random() * eggLeft),
+                        top: Math.floor(Math.random() * specialEggTop)
+                    })
+                }
+                $("body").append(egg)
+                $("#count").text(`${eggCount} egg so far!`)
+            } else {
+                $("#count").text(`${eggCount} eggs so far!`);
+            }
+        }
+        function codeSuccess() {
+            Swal.fire({
+                title: "Code applied!",
+                icon: "success",
+            });
+        };
+
+        function badCode() {
+            Swal.fire({
+                title: "Invalid code! Use all caps!",
+                icon: "error"
+            });
+        };
+
+        function usedCode() {
+            Swal.fire({
+                title: "You've already used this code!",
+                icon: "error"
+            });
+        }
+        function inputCode() {
+            console.log("inputCode() triggered"); // Debugging log
+
+            Swal.fire({
+                title: "Enter Promo Code",
+                imageUrl: "eggs/gold.png",
+                input: "text",
+                inputAttributes: {
+                    autocomplete: 'off'
+                },
+                showCancelButton: true,
+                allowOutsideClick: false,
+                confirmButtonText: 'Confirm',
+                preConfirm: () => {
+                    let inputVal = $(".swal2-input").val().trim(); // Get input value safely
+                    console.log("Entered Code:", inputVal); // Debugging log
+
+                    if (!inputVal) {
+                        Swal.showValidationMessage('Please enter a code!');
+                        return false;
+                    }
+                    return inputVal; // Return the entered code
+                }
+            }).then((result) => {
+                if (result.isDismissed) {
+                    console.log("User canceled input");
+                    return;
+                }
+
+                let code = result.value; // Get the confirmed code
+                console.log("Processing Code:", code);
+
+                if (codesUsed[code]) {
+                    usedCode(); // Show message for already used code
+                    return;
+                }
+
+                let codeApplied = false; // Track if a code was successfully applied
+
+                if (code === "KITTY") {
+                    for (let i = 0; i < 50; i++) makeEgg();
+                    codeApplied = true;
+                } else if (code === "KINGDOM") {
+                    for (let i = 0; i < 30; i++) removeEgg();
+                    codeApplied = true;
+                } else if (code === "LEMON") {
+                    code3Applied = true;
+                    makeEgg();
+                    code3Applied = false;
+                    codeApplied = true;
+                } else if (code === "RECOMMENDATION") {
+                    for (let i = 0; i < 5; i++) {
+                        code4Applied = true;
+                        makeEgg();
+                        code4Applied = false;
+                    }
+                    codeApplied = true;
+                } else if (code === "CORRESPONDENCE") {
+                    eggCount = -100;
+                    updateEggCount();
+                    codeApplied = true;
+                } else if (code === "CHICKEN2024EGGS") {
+                    Swal.fire({
+                        title: "Enter Amount Of Eggs:",
+                        icon: "info",
+                        input: "number",
+                    }).then((amountResult) => {
+                        let amount = parseInt(amountResult.value, 10);
+                        if (!isNaN(amount) && amount > 0) {
+                            eggCount = 0;
+                            updateEggCount();
+                            createEgg("brown", amount, true);
+                            codesUsed[code] = true; // Mark as used since it's confirmed
+                            localStorage.setItem("codesUsed", JSON.stringify(codesUsed)); // Save progress
+                            codeSuccess();
+                        } else {
+                            Swal.fire("Invalid number!", "Please enter a valid egg amount.", "error");
+                        }
+                    });
+                    return;
+                } else if (code === "HOW-CUTE") {
+                    secretCodeApplied = true;
+                    makeEgg();
+                    secretCodeApplied = false;
+                    codeApplied = true;
+                } else if (code === "PIGMENTATION") {
+                    window.location.href = "sound/sound3.mp4";
+                    return;
+                } else {
+                    badCode(); // Show invalid code message
+                    return;
+                }
+
+                if (codeApplied) {
+                    codesUsed[code] = true; // Mark the code as used
+                    localStorage.setItem("codesUsed", JSON.stringify(codesUsed)); // Save progress
+                    codeSuccess(); // Show success message
+                }
+            });
+        }
+
+        function spawnEgg(event) {
+            if (event.key === 'e' || event.key === 'E') {
+                makeEgg();
+                if (whichSound === 0) {
+                    sound0.play();
+                } else if (whichSound === 1) {
+                    sound1.play();
+                } else if (whichSound === 2) {
+                    sound2.play();
+                }
+            }
+        };
+        function achieve(name, desc, id,) {
+            if (showAchievePopups) {
+                let popup1 = Swal.fire({
+                    title: name,
+                    html: `<p class="popupFont">${desc}</p>`,
+                    backdrop: false,
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    icon: "success",
+                    position: "top-start",
+                    customClass: {
+                        popup: "achieveSize achieveAnimation"
+                    },
+                    didOpen: () => {
+                        const popup = $(".swal2-popup");
+                        popup.on("animationend", () => {
+                            setTimeout(() => {
+                                popup1.close();
+                            }, 3000)
+                        })
+                    },
+                    willClose: () => {
+                        const popup = $(".swal2-popup")[0];
+                        popup.classList.add("achieveDone")
+                    }
+                })
+            };
+            achieves[id].has = true;
+        }
+
+        function checkAchieves() {
+            for (let achieveKey in achieves) {
+                if (eval(achieves[achieveKey].condition) && !achieves[achieveKey].has) {
+                    achieve(achieves[achieveKey].title, achieves[achieveKey].desc, achieveKey);
+                }
+            }
+        }
+        document.addEventListener('keyup', () => {
+            if (!inPopup) {
+                spawnEgg(event);
+            }
+        });
+
+        function toggleSettings() {
+            $('#settingsMenu').removeClass('hidden');
+            const darkOverlay = $('#darkOverlay');
+            if ($("#showOverlay")[0].checked) {
+                darkOverlay.css('display', 'block')
+            };
+        }
+        setInterval(() => {
+            checkAchieves();
+        }, 1);
+        setInterval(() => {
+            justLuckyHelper = Math.floor(Math.random() * 1000000);
+        }, 1000);
+
+        function saveData() {
+            let hasData = true;
+            localStorage.setItem("eggCount", eggCount) //Total eggCount
+            localStorage.setItem("brownEggs", brownEggs) //Brown eggs
+            localStorage.setItem("whiteEggs", whiteEggs) //White eggs, etc.
+            localStorage.setItem("goldEggs", goldEggs)
+            localStorage.setItem("diamondEggs", diamondEggs)
+            localStorage.setItem("specialEggs", specialEggs)
+            localStorage.setItem("saphEggs", saphEggs)
+            localStorage.setItem("codesUsed", JSON.stringify(codesUsed)) //iCodes array
+            localStorage.setItem("achieves", JSON.stringify(achieves)) //Achievements object
+            localStorage.setItem("hasData", hasData)
+        };
+        //Check for achievements every second
+        window.onbeforeunload = () => {
+            if (!wipingData) {
+                saveData();
+            }
+        };
+
+        function closeSettings() {
+            settingsOpen = false;
+            $('#settingsMenu').addClass('hidden');
+            const darkOverlay = $('#darkOverlay');
+            darkOverlay.css('display', 'none')
+        }
+        
+        $('#darkMode').on('change', () => {
+            if ($('#darkMode')[0].checked) {
+                darkModeOn = true;
+                $('body').css('background-color', 'black');
+                $('#count').css('color', 'white');
+            } else {
+                darkModeOn = false;
+                $('#count').css('color', 'black');
+                $('body').css('background-color', 'white');
+            }
+        });
+        $('#showAchieves').on('change', () => {
+            showAchievePopups = !showAchievePopups;
+        })
+        $('#idiot').on('click', () => { //Use click event instead of change event
+            event.preventDefault();
+            Swal.fire({
+                title: 'bruh\u{1F923}',
+                text: 'lmao do u really think i would let u do that',
+                allowOutsideClick: false,
+                confirmButtonText: 'yes',
+                confirmButtonColor: '#13d13c'
+            }).then(() => {
+                document.getElementById("idiot").checked = true;
+            })
+
+        });
+        setInterval(() => {
+            if (eggCount >= Number.MAX_SAFE_INTEGER && !inPopup && !showedMaxPopup) {
+                Swal.fire({
+                    title: 'Warning!',
+                    html:
+                        `<p>You have gotten so many eggs
+                    that you have officially
+                    reached the max number that
+                    Egg-Gen can hold. If you try
+                    to make more eggs, the egg count
+                    will likely not get a response.
+                    For more information, click
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER" target="_blank">here.</a>
+                    </p>`,
+                    didOpen: () => {
+                        inPopup = true;
+                        showedMaxPopup = true;
+                    }
+                }).then((result) => {
+                    inPopup = false;
+                })
+            }
+        }, 100);
+
+        setInterval(() => {
+            if (!document.getElementById("idiot").checked && !showedIdiotPopup) {
+                showedIdiotPopup = true;
+                document.getElementById("idiot").checked = true;
+                Swal.fire({
+                    title: 'u can\'t outsmart me!',
+                    text: 
+                    `tryin to use javascript
+                    to uncheck it, huh? well
+                    whatever you thought, i
+                    already thinked it!`
+                }).then(() => {
+                    showedIdiotPopup = false;
+                })
+            }
+        }, 100)
+    </script>
+</body>
+
+</html>

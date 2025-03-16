@@ -1,0 +1,249 @@
+===========================================
+Egg Generator:
+v1.4 Hotfix 2
+===========================================
+v1.4:
+Added achievements (which was a LOT 
+of work)
+Removed legacy folder to reduce folder
+size
+Added favicon (that tiny icon next to
+the title)
+===========================================
+Hotfix 1:
+Added music
+===========================================
+Hotfix 2:
+Added settings
+Added a new egg
+Enforced compressed archive protection 
+(you can no longer even play Egg-Gen if 
+it is in a compressed archive.)
+===========================================
+Hotfix 3:
+Further enforced compressed archive
+protection
+===========================================
+If you have any suggestions, please
+email me at raydenz2012@gmail.com!
+===========================================
+Thanks, Rayden
+===========================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+You're still reading. Fine. Go to the legacy folder
+for some past versions of Egg Generator. Leave now.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Okay, seriously? Just go
+away now. There's nothing here.
