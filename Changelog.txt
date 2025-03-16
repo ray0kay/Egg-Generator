@@ -1,6 +1,6 @@
 ===========================================
 Egg Generator:
-v1.4 Hotfix 2
+v1.4.3
 ===========================================
 v1.4:
 Added achievements (which was a LOT 
@@ -10,17 +10,14 @@ size
 Added favicon (that tiny icon next to
 the title)
 ===========================================
-Hotfix 1:
+v1.4.1:
 Added music
 ===========================================
-Hotfix 2:
+v1.4.2:
 Added settings
 Added a new egg
-Enforced compressed archive protection 
-(you can no longer even play Egg-Gen if 
-it is in a compressed archive.)
 ===========================================
-Hotfix 3:
+v1.4.3:
 Further enforced compressed archive
 protection
 ===========================================
