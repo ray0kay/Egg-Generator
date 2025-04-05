@@ -1,0 +1,31 @@
+{
+  "modData": {
+    "title": "Example Mod",
+    "desc": "Example mod to base off on."
+  },
+  "eggs": [
+    {
+      "path": "exampleMod/eggs/customEgg0.png",
+      "chance": 0.5,
+      "maxX": 0.5078125,
+      "maxY": 0.49909255898,
+      "lossCodeRemovable": true
+    },
+    {
+      "path": "exampleMod/eggs/customEgg1.png",
+      "chance": 0.5,
+      "maxX": 0.5078125,
+      "maxY": 0.49909255898,
+      "lossCodeRemovable": false
+    }
+  ],
+  "sounds": [
+    {
+      "path": "exampleMod/sounds/sound0.mp3",
+      "chance": 1.0
+    }
+  ],
+  "externalFiles": {
+    "stylesheet": "exampleMod/mainCSS.css"
+  }
+}

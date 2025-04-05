@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Mod Opener</title>
+    <link rel="stylesheet" href="openerStylesheet.css">
+</head>
+
+<body>
+    <div id="inputMod">
+        <h1>Mod Opener</h1>
+        <p>Click the button below to import your mod file.</p>
+        <label for="fileInput">Input the mod file:</label>
+        <input type="file" id="fileInput" accept="application/json">
+    </div>
+    <div id="gameArea">
+        <p id="count">Press E to start!</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script>
+        $('#gameArea').hide();
+
+        Swal.fire({
+            title: 'Warning!',
+            icon: 'warning',
+            html: `
+                <p>Make sure to only import mods from trusted sources.
+                Mods may contain malicious code that can harm your device.
+                By clicking "OK", you understand this
+                and that the creator of this mod opener
+                is not responsible for any damage caused.</p>
+            `,
+            allowOutsideClick: false,
+            showDenyButton: true,
+            denyButtonText: 'Exit',
+        }).then((result) => {
+            if (result.isDenied) {
+                window.open('', '_self', ''); window.close();
+            }
+        });
+
+        let eggCount = 0;
+
+        const totalScreenArea = window.innerWidth * window.innerHeight;
+        const eggCounterLeft = 0.68359375 * window.innerWidth;
+        const eggCounterSize = 0.00009216197822141561 * totalScreenArea;
+
+        // Function to simplify fractions (unchanged)
+        function simpFracChance(numerator, denominator) {
+            function gcd(a, b) {
+                return b === 0 ? a : gcd(b, a % b);
+            }
+
+            const commonDivisor = gcd(numerator, denominator);
+            const simplifiedNumerator = numerator / commonDivisor;
+            const simplifiedDenominator = denominator / commonDivisor;
+
+            return simplifiedNumerator;
+        }
+
+        // Function to convert float chance to fraction (unchanged)
+        function floatChanceToFrac(floatChance) {
+            return simpFracChance(floatChance * 100, 100);
+        }
+
+        function makeEgg(eggs, sounds, playSound) {
+            // Calculate the total probability
+            const totalChance = eggs.reduce((sum, egg) => sum + egg.chance, 0);
+            console.log(totalChance);
+
+            // Generate a random number between 0 and totalChance
+            const randomNum = Math.random() * totalChance;
+
+            // Select the egg based on the random number and the cumulative chance
+            let cumulativeChance = 0;
+            let selectedEgg = null;
+
+            for (const egg of eggs) {
+                cumulativeChance += egg.chance;
+                if (randomNum <= cumulativeChance) {
+                    selectedEgg = egg;
+                    break;
+                }
+            }
+
+            if (!selectedEgg) {
+                selectedEgg = eggs[0]; // Fallback to the first egg if no selection is made
+            }
+
+            let eggPath = selectedEgg.path;
+            let eggHtml = `<img src="${eggPath}" id="egg">`;
+            let egg = $(eggHtml);
+
+            if ('maxX' in selectedEgg) {
+                egg.css({
+                    position: 'absolute',
+                    left: Math.floor(Math.random() * (selectedEgg.maxX * window.innerWidth))
+                });
+            } else {
+                egg.css({
+                    position: 'absolute',
+                    left: Math.floor(Math.random() * 0.5078125 * window.innerWidth)
+                });
+            }
+
+            if ('maxY' in selectedEgg) {
+                egg.css({
+                    position: 'absolute',
+                    top: Math.floor(Math.random() * (selectedEgg.maxY * window.innerHeight))
+                });
+            } else {
+                egg.css({
+                    position: 'absolute',
+                    top: Math.floor(Math.random() * 0.49909255898 * window.innerHeight)
+                });
+            }
+
+            $('body').append(egg);
+            eggCount++;
+            $('#count').text(`${eggCount} eggs so far!`);
+
+            if (playSound) {
+                let whichSound = sounds[Math.floor(Math.random() * sounds.length)];
+
+                if (playSound && sounds.length > 0) {
+                    let whichSound = sounds[0]; // Since there is only one sound, select the first one
+                    let sound = new Audio(whichSound.path);
+                    sound.play();
+                } else {
+                    let sound = new Audio(whichSound.path);
+                    sound.play();
+                }
+            }
+        }
+
+        // Event listener for file input
+        const fileInput = document.getElementById("fileInput");
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                fileInput.disabled = true;
+                const fileContent = event.target.result;
+
+                try {
+                    const modData = JSON.parse(fileContent);
+                    console.log(modData);
+
+                    document.addEventListener('keyup', (event) => {
+                        if (event.code === 'KeyE') {
+                            makeEgg(modData.eggs, modData.sounds, true);
+                        }
+                    })
+
+                    Swal.fire({
+                        title: "Success!",
+                        icon: "success",
+                        html:
+                            `
+                        <p>Mod imported successfully!</p>
+                        <button id="viewData" onclick="document.getElementById('modData').style.display = 'block'; document.getElementById('viewData').style.display = 'none';">View Mod Data</button>
+                        <div id="modData" style="display:none;">
+                            <p id="modTitle" style="color: limegreen; font-family: 'Trebuchet MS', sans-serif;"><b>Mod Data:<br><br>${modData.modData.title}<br><br>${modData.modData.desc}</b></p>
+                        </div>
+                        `
+                    }).then(() => {
+                        $('#inputMod').hide();
+                        $('#gameArea').show();
+                        $("#count").css({
+                            position: "absolute",
+                            left: eggCounterLeft,
+                            top: 55,
+                            'font-size': eggCounterSize
+                        });
+                    });
+
+                } catch (error) {
+                    console.error("Error importing mod:", error);
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        html: `
+                            <p>Something went wrong!</p>
+                            <button id="errorButton">See Error Details</button>
+                            <div id="importError" style="display:none;">
+                                <pre id="errorText">${error.message}</pre> 
+                            </div>
+                            <p>Refresh the page to try again.</p>
+                        `,
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            const button = document.getElementById("errorButton");
+                            const errorDetails = document.getElementById("importError");
+
+                            button.addEventListener("click", () => {
+                                errorDetails.style.display = "block";
+                                button.style.display = "none";
+                                document.getElementById("errorText").style.color = "red";
+                                fileInput.disabled = false;
+                            });
+                        }
+                    });
+                }
+            };
+
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+
+</html>

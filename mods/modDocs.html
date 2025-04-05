@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Mod Docs</title>
+    <link rel="stylesheet" href="docsStylesheet.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source Code Pro" />
+    <!--Source Code Pro Font-->
+</head>
+
+<body>
+    <h1>Egg Generator Mod Documentation</h1>
+    <p>
+        Please note that these docs are
+        <strong><em>still under development.</em></strong> Some parts may be
+        incomplete or lacking information.
+    </p>
+    <h2>Things Needed</h2>
+    <p>
+        To code a mod, you need to use a programming language called JSON. JSON is a
+        language that is used to store data. It stands for JavaScript Object Notation.
+       A text editor, preferably a code editor like Visual Studio Code (best code
+        editor ever tbh). If you can't get a app code editor use a website editor
+        like
+        <a href="https://jsoneditoronline.org/#left=local.taruto" target="_blank">JSON Editor Online.</a>
+        (Make sure to get rid of the existing code.) It's also really helpful if
+        you also know some JSON or JS (JavaScript).
+    </p>
+    <h2>Actually Coding The Mod</h2>
+    <p>
+        Now that you have your things, you want to actually code the mod. Start by
+        making a .json file. Name it anything you want, as long as it's without
+        spaces. If at any time you're stuck, check the 
+        <a href="exampleMod.json" target="_blank">exampleMod.json</a> file for
+        examples. Type in the following code:
+    </p>
+    <pre><code class="codeText">
+{
+    "modData": {
+        "title": "My Custom Mod",
+        "desc": "My First Egg-Gen Mod!"
+    }
+}
+    </code></pre>
+    <p>This code defines the title and description of your mod.</p>
+    <h3>Explanation:</h3>
+    <p>
+        <span class="codeText">modData</span> is an object that holds the title
+        and description of your mod.
+    </p>
+    <img src="docAssets/img1.png" alt="Mod Opener" width="325" height="300" />
+    <h2>Adding Eggs</h2>
+    <p>
+        Now comes the fun part! It's time to add eggs! To add eggs, you need to
+        add an array to the <span class="codeText">modData</span> object. The code
+        should now look like this:
+    </p>
+    <pre><code class="codeText">
+{
+    "modData": {
+        "title": "My Custom Mod",
+        "desc": "My First Egg-Gen Mod!"
+    },
+    "eggs": [
+        {
+            "path": "exampleMod/eggs/customEgg0.png",
+            "chance": 0.5
+        },
+        {
+            "path": "exampleMod/eggs/customEgg1.png",
+            "chance": 0.5
+        }
+    ]
+}
+    </code></pre>
+    Now, the <span class="codeText">eggs</span> array holds the eggs of your
+    mod. Each egg is an object that has a path and a chance. The path is the
+    path to the egg image and the chance is the chance of getting the egg. The
+    chance is a number between 0 and 1. The formula to get the egg is it adds
+    all the chances together. It then chooses a random number between 0 and
+    the total chance. If the random number is less than the chance of the first egg,
+    it then gives you the first egg. If not, it moves on to the next egg and adds up
+    the chance of that egg. It keeps doing this until it finds an egg that matches the 
+    random number. If there is a error and no selection is made, it falls back to the first egg.
+<br>
+    <img src="docAssets/img2.png" alt="Mod Opener" height="100" width="500" />
+</body>
+
+</html>

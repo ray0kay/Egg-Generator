@@ -1,0 +1,17 @@
+.swal2-popup.achieveSize {
+	width: 18em;
+}
+
+.swal2-popup.achieveAnimation {
+	animation: fadeInUp;
+	animation-delay: 1s;
+	animation: bounceIn;
+	animation-duration: 3s;
+}
+
+.swal2-popup.achieveDone {
+	overflow: hidden;
+	box-sizing: border-box;
+	animation: bounceOut, fadeOutDown, faster;
+	animation-duration: 2s;
+}

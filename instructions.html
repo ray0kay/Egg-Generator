@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Instructions</title>
+    <link rel="stylesheet" href="css/doc.css">
+    <style>
+        #whiteOverlay {
+            position: fixed;
+            /* Covers the whole screen */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(255, 255, 255);
+            display: none;
+            /* Hidden by default */
+            z-index: 600;
+            /* Make sure it's on top */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="whiteOverlay"></div>
+    <h1>Egg-Gen Instructions</h1>
+    <h2>Made By ray0kay</h2>
+    <p>To play Egg Generator, press E to make an egg.<br>There are different kinds of eggs,
+        each having different chances of spawning.br><br>Your data, eggs, promo codes
+        and all the other stuff will be saved automatically.<br><br>To wipe your data,
+        click the "Wipe Data" button.<br><br>
+        If you have any suggestions, email me <a href="mailto:raydenz2012@gmail.com">here</a>.<br><br>
+        Click <a href="javascript:window.open('egg-gen.html','_blank')">here</a> to go to Egg-Gen.
+    </p>
+    <img src="eggs/egg0.png">
+    <img src="eggs/egg1.png">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const compressFormats = [".zip", ".tar", ".rar", ".bz2",
+            ".gz", ".lha", ".tgz", ".arj", ".arc", ".sit", "cab",
+            ".xz", ".hqx", ".7z"
+        ]
+        for (let i = 0; i < compressFormats.length; i++) {
+            if (location.href.includes(compressFormats[i])) {
+                Swal.fire({
+                    html: `<p style="font-family: Trebuchet MS, sans-serif;">
+            You are opening this file in a compressed archive.<br>
+            As of v1.4 Hotfix 3, you can no longer open instructions<br>
+            if it is in a compressed archive. If you think this is a <br>
+            mistake, email 
+            <a href="mailto:raydenz2012@gmail.com">me.</a>
+            </p>`,
+                    icon: "warning",
+                    allowOutsideClick: false,
+                    confirmButtonColor: '#eb2626',
+                    confirmButtonText: "Close Instructions",
+                    didOpen: () => {
+                        inPopup = true;
+                        $('#whiteOverlay').css('display', 'block')
+                    }
+                }).then(() => {
+                    window.open('', '_self', ''); window.close();
+                })
+            }
+        }
+    </script>
+</body>
+
+</html>
